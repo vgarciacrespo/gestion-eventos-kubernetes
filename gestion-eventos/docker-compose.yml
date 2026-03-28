@@ -1,0 +1,29 @@
+services:
+  database:
+    image: postgres:18
+    container_name: database
+    environment:
+      POSTGRES_DB: upsa
+      POSTGRES_USER: system
+      POSTGRES_PASSWORD: manager
+      PGDATA: /var/lib/postgresql/18/docker
+    volumes:
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5555:5432"
+
+  ws-catalogo:
+    build:
+      context: ./ws-catalogo
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: ws-catalogo
+    environment:
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: upsa
+      DATABASE_USERNAME: system
+      DATABASE_PASSWORD: manager
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
