@@ -1,0 +1,4 @@
+### GET /eventos
+GET http://localhost:8082/eventos
+Accept: application/json
+###

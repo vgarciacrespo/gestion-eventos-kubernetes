@@ -16,7 +16,7 @@ public class EventoDto
     private String nombre;
     private String descripcion;
     private String disciplina;
-    private Recinto recinto;
+    private String recinto;
     private LocalDateTime fecha_inicio;
     private LocalDateTime fecha_final;
     private double precio;

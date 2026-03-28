@@ -1,21 +1,22 @@
-package es.upsa.tfg.gestioneventos.wscatalogo.application.respository.impl;
+package es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.impl;
 
 import es.upsa.tfg.gestioneventos.domain.entities.Evento;
 import es.upsa.tfg.gestioneventos.domain.exceptions.EventosAppException;
-import es.upsa.tfg.gestioneventos.wscatalogo.adapters.output.persistence.Dao;
 import es.upsa.tfg.gestioneventos.wscatalogo.application.respository.Repository;
+import es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.GetEventosUseCase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.util.List;
 
 @ApplicationScoped
-public class RepositoryImpl implements Repository
+public class GetEventosUseCaseImpl implements GetEventosUseCase
 {
     @Inject
-    Dao dao;
+    Repository repository;
+
     @Override
-    public List<Evento> getEventos() throws EventosAppException {
-        return dao.findEventos();
+    public List<Evento> execute() throws EventosAppException {
+        return repository.getEventos();
     }
 }
