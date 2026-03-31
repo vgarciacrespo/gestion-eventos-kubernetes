@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ws-catalogo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ws-catalogo
+  template:
+    metadata:
+      labels:
+        app: ws-catalogo
+    spec:
+      containers:
+        - name: ws-catalogo
+          image: gestion-eventos-ws-catalogo:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_HOST
+              value: "eventos-db-service"
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              value: "upsa"
+            - name: DATABASE_USERNAME
+              value: "system"
+            - name: DATABASE_PASSWORD
+              value: "manager"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ws-catalogo-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: ws-catalogo
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
