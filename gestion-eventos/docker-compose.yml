@@ -10,7 +10,12 @@ services:
     volumes:
       - ./database.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5555:5432"
+      - 5555:5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U system -d upsa" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   ws-catalogo:
     build:
@@ -26,4 +31,11 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/eventos/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s

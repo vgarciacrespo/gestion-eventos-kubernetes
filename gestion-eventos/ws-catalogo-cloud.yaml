@@ -12,10 +12,12 @@ spec:
       labels:
         app: ws-catalogo
     spec:
+      serviceAccountName: ksa-backend
       containers:
+
         - name: ws-catalogo
-          image: gestion-eventos-ws-catalogo:latest
-          imagePullPolicy: IfNotPresent
+          image: europe-southwest1-docker.pkg.dev/gestionreservaseventos/repo-eventos/ws-catalogo:v2
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           livenessProbe:
@@ -32,15 +34,23 @@ spec:
             periodSeconds: 10
           env:
             - name: DATABASE_HOST
-              value: "eventos-db-service"
+              value: "127.0.0.1"
             - name: DATABASE_PORT
               value: "5432"
             - name: DATABASE_NAME
               value: "upsa"
             - name: DATABASE_USERNAME
-              value: "system"
+              value: "postgres"
             - name: DATABASE_PASSWORD
-              value: "manager"
+              value: "managerDB.1"
+
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.1
+          args:
+            - "--port=5432"
+            - "gestionreservaseventos:europe-southwest1:gestion-eventos"
+          securityContext:
+            runAsNonRoot: true
 ---
 apiVersion: v1
 kind: Service

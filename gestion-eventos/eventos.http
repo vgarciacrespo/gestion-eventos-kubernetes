@@ -2,3 +2,9 @@
 GET http://localhost:8080/eventos
 Accept: application/json
 ###
+
+
+### GET /eventos
+http://34.175.190.51:8080/eventos/health/ready
+Accept: application/json
+###
