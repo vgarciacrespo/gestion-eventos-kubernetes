@@ -10,6 +10,10 @@ import java.util.Optional;
 public interface Repository
 {
     List<Evento> getEventos() throws EventosAppException;
-    Optional<Evento> getEvento(String id) throws EventosAppException;
-    Optional<Recinto> getRecinto(String id) throws EventosAppException;
+    List<Recinto> getRecintos() throws EventosAppException;
+    Optional<Evento> getEventoById(String id) throws EventosAppException;
+    Optional<Recinto> getRecintoById(String id) throws EventosAppException;
+    Evento save(Evento evento) throws EventosAppException;
+    Recinto save(Recinto recinto) throws EventosAppException;
+    void removeEventoById(String id) throws EventosAppException;
 }

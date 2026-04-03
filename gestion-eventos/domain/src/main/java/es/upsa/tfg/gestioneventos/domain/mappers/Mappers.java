@@ -43,14 +43,14 @@ public class Mappers
                 .withId_recinto(null)
                 .withNombre(recintoDto.getNombre())
                 .withUbicacion(recintoDto.getUbicacion())
-                .withUbicacion(recintoDto.getUbicacion())
+                .withCapacidad_total(recintoDto.getCapacidad_total())
                 .build();
     }
     public static RecintoDto toRecintoDto(Recinto recinto){
         return RecintoDto.builder()
                 .withNombre(recinto.getNombre())
                 .withUbicacion(recinto.getUbicacion())
-                .withUbicacion(recinto.getUbicacion())
+                .withCapacidad_total(recinto.getCapacidad_total())
                 .build();
     }
 

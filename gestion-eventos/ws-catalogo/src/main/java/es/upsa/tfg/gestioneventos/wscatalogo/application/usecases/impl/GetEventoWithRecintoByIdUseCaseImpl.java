@@ -11,7 +11,6 @@ import es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.GetEventoWithR
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import java.util.Optional;
 
 @ApplicationScoped
 public class GetEventoWithRecintoByIdUseCaseImpl implements GetEventoWithRecintoByIdUseCase
@@ -21,11 +20,11 @@ public class GetEventoWithRecintoByIdUseCaseImpl implements GetEventoWithRecinto
     @Override
     public EventoWithRecinto execute(String id) throws EventosAppException
     {
-        Evento evento = repository.getEvento(id)
+        Evento evento = repository.getEventoById(id)
                 .orElseThrow(EventoNotFoundException::new);
 
         String idRecinto = evento.getRecinto();
-        Recinto recinto = repository.getRecinto(idRecinto)
+        Recinto recinto = repository.getRecintoById(idRecinto)
                 .orElseThrow(RecintoNotFoundException::new);
 
         return EventoWithRecinto.builder()

@@ -10,6 +10,12 @@ import java.util.Optional;
 public interface Dao
 {
     List<Evento> findEventos() throws EventosAppException;
+    List<Recinto> findRecintos() throws EventosAppException;
     Optional<Evento> findEventoById(String id) throws EventosAppException;
     Optional<Recinto> findRecintoById(String id) throws EventosAppException;
+    Evento insertEvento(Evento evento) throws EventosAppException;
+    Recinto insertRecinto(Recinto recinto) throws EventosAppException;
+    Optional<Evento> updateEvento(Evento evento) throws EventosAppException;
+    void deleteEvento(String id) throws EventosAppException;
+
 }

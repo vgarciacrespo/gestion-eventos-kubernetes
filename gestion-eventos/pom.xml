@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>domain</module>
+        <module>shared-quarkus</module>
         <module>ws-catalogo</module>
     </modules>
 

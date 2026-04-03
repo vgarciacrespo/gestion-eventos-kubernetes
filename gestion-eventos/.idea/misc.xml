@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="Quarkus" url="file://$PROJECT_DIR$/shared-quarkus" />
     <file type="Quarkus" url="file://$PROJECT_DIR$/ws-catalogo" />
   </component>
   <component name="MavenProjectsManager">
@@ -9,6 +10,7 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/ws-catalogo/pom.xml" />
+        <option value="$PROJECT_DIR$/shared-quarkus/pom.xml" />
       </list>
     </option>
   </component>
