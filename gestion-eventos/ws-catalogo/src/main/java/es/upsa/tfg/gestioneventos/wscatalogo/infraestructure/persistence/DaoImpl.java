@@ -5,6 +5,7 @@ import es.upsa.tfg.gestioneventos.domain.entities.Evento;
 import es.upsa.tfg.gestioneventos.domain.entities.Recinto;
 import es.upsa.tfg.gestioneventos.domain.exceptions.EventoNotFoundException;
 import es.upsa.tfg.gestioneventos.domain.exceptions.EventosAppException;
+import es.upsa.tfg.gestioneventos.domain.exceptions.RecintoNotFoundException;
 import es.upsa.tfg.gestioneventos.domain.exceptions.SQLEventosAppException;
 import es.upsa.tfg.gestioneventos.wscatalogo.adapters.output.persistence.Dao;
 import es.upsa.tfg.gestioneventos.wscatalogo.domain.exceptions.FieldRequiredSQLException;
@@ -21,24 +22,23 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class DaoImpl implements Dao
-{
+public class DaoImpl implements Dao {
     @Inject
     DataSource dataSource;
 
-
+    //eventos
     @Override
-    public List<Evento> findEventos() throws EventosAppException{
+    public List<Evento> findEventos() throws EventosAppException
+    {
 
         final String SQL = """
-                            SELECT e.id_evento, e.nombre, e.descripcion, e.disciplina, e.id_recinto, e.fecha_inicio, e.fecha_fin, e.precio, e.capacidad_max, e.estado
-                            FROM eventos e
-                           """;
+                 SELECT e.id_evento, e.nombre, e.descripcion, e.disciplina, e.id_recinto, e.fecha_inicio, e.fecha_fin, e.precio, e.capacidad_max, e.estado
+                 FROM eventos e
+                """;
         List<Evento> eventos = new ArrayList<>();
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(SQL))
-        {
+             ResultSet resultSet = statement.executeQuery(SQL)) {
             while (resultSet.next()) {
                 Evento evento = toEvento(resultSet);
                 eventos.add(evento);
@@ -46,30 +46,7 @@ public class DaoImpl implements Dao
             return eventos;
 
 
-        }catch (SQLException sqlException){
-            throw toEventosAppException(sqlException);
-        }
-    }
-
-    @Override
-    public List<Recinto> findRecintos() throws EventosAppException {
-        final String SQL = """
-                            SELECT r.id_recinto, r.nombre, r.ubicacion, r.capacidad_total
-                            FROM recintos r
-                           """;
-        List<Recinto> recintos = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(SQL))
-        {
-            while (resultSet.next()) {
-                Recinto recinto = toRecinto(resultSet);
-                recintos.add(recinto);
-            }
-            return recintos;
-
-
-        }catch (SQLException sqlException){
+        } catch (SQLException sqlException) {
             throw toEventosAppException(sqlException);
         }
     }
@@ -78,57 +55,33 @@ public class DaoImpl implements Dao
     public Optional<Evento> findEventoById(String id) throws EventosAppException
     {
         final String SQL = """
-                            SELECT e.id_evento, e.nombre, e.descripcion, e.disciplina, e.id_recinto, e.fecha_inicio, e.fecha_fin, e.precio, e.capacidad_max, e.estado
-                            FROM eventos e
-                            WHERE e.id_evento = ?;
-                           """;
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL)
-        )
-        {
+                 SELECT e.id_evento, e.nombre, e.descripcion, e.disciplina, e.id_recinto, e.fecha_inicio, e.fecha_fin, e.precio, e.capacidad_max, e.estado
+                 FROM eventos e
+                 WHERE e.id_evento = ?;
+                """;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL)
+        ) {
             preparedStatement.setString(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery())
-            {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return resultSet.next() ? Optional.of(toEvento(resultSet)) : Optional.empty();
             }
 
-        }catch (SQLException sqlException)
-        {
+        } catch (SQLException sqlException) {
             throw toEventosAppException(sqlException);
         }
     }
 
     @Override
-    public Optional<Recinto> findRecintoById(String id) throws EventosAppException {
+    public Evento insertEvento(Evento evento) throws EventosAppException
+    {
         final String SQL = """
-                            SELECT r.id_recinto, r.nombre, r.ubicacion, r.capacidad_total
-                            FROM recintos r
-                            WHERE r.id_recinto = ?;
-                           """;
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL)
-        ){
-            preparedStatement.setString(1, id);
-            try(ResultSet resultSet = preparedStatement.executeQuery())
-            {
-                return resultSet.next() ? Optional.of(toRecinto(resultSet)) : Optional.empty();
-            }
-        }catch (SQLException sqlException)
-        {
-            throw toEventosAppException(sqlException);
-        }
-    }
-
-    @Override
-    public Evento insertEvento(Evento evento) throws EventosAppException {
-        final String SQL = """
-                            INSERT INTO eventos( id_evento            , nombre, descripcion, disciplina, id_recinto, fecha_inicio, fecha_fin, precio, capacidad_max, estado)
-                                         VALUES(nextval('seq_eventos'), ?     ,      ?     ,      ?    ,     ?     ,     ?       ,     ?    ,    ?  ,       ?      ,    ?  )
-                           """;
+                 INSERT INTO eventos( id_evento            , nombre, descripcion, disciplina, id_recinto, fecha_inicio, fecha_fin, precio, capacidad_max, estado)
+                              VALUES(nextval('seq_eventos'), ?     ,      ?     ,      ?    ,     ?     ,     ?       ,     ?    ,    ?  ,       ?      ,    ?  )
+                """;
         final String[] fields = {"id_evento"};
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL, fields))
-        {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL, fields)) {
             preparedStatement.setString(1, evento.getNombre());
             preparedStatement.setString(2, evento.getDescripcion());
             preparedStatement.setString(3, evento.getDisciplina());
@@ -139,55 +92,29 @@ public class DaoImpl implements Dao
             preparedStatement.setInt(8, evento.getCapacidad_max());
             preparedStatement.setString(9, String.valueOf(evento.getEstado()));
             preparedStatement.executeUpdate();
-            try(ResultSet resultSet = preparedStatement.getGeneratedKeys())
-            {
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 resultSet.next();
                 String id = resultSet.getString(1);
                 return evento.withId_evento(id);
             }
-        }  catch (SQLException sqlException){
+        } catch (SQLException sqlException) {
             throw toEventosAppException(sqlException);
         }
     }
 
     @Override
-    public Recinto insertRecinto(Recinto recinto) throws EventosAppException {
+    public Optional<Evento> updateEvento(Evento evento) throws EventosAppException
+    {
         final String SQL = """
-                            INSERT INTO recintos( id_recinto            , nombre, ubicacion, capacidad_total)
-                                          VALUES(nextval('seq_recintos'), ?     ,      ?   ,      ?         )
-                           """;
-        final String[] fields = {"id_recinto"};
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL, fields))
-        {
-            preparedStatement.setString(1, recinto.getNombre());
-            preparedStatement.setString(2, recinto.getUbicacion());
-            preparedStatement.setInt(3, recinto.getCapacidad_total());
-            preparedStatement.executeUpdate();
-            try(ResultSet resultSet = preparedStatement.getGeneratedKeys())
-            {
-                resultSet.next();
-                String id = resultSet.getString(1);
-                return recinto.withId_recinto(id);
-            }
-        }  catch (SQLException sqlException){
-            throw toEventosAppException(sqlException);
-        }
-    }
+                 UPDATE eventos
+                 SET nombre = ?, descripcion = ?, disciplina = ?,
+                     id_recinto = ?, fecha_inicio = ?, fecha_fin = ?,
+                     precio = ?, capacidad_max = ?, estado = ?
+                 WHERE id_evento = ?
+                """;
 
-    @Override
-    public Optional<Evento> updateEvento(Evento evento) throws EventosAppException {
-        final String SQL = """
-                            UPDATE eventos
-                            SET nombre = ?, descripcion = ?, disciplina = ?,
-                                id_recinto = ?, fecha_inicio = ?, fecha_fin = ?,
-                                precio = ?, capacidad_max = ?, estado = ?
-                            WHERE id_evento = ?
-                           """;
-
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL))
-        {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL)) {
             preparedStatement.setString(1, evento.getNombre());
             preparedStatement.setString(2, evento.getDescripcion());
             preparedStatement.setString(3, evento.getDisciplina());
@@ -202,53 +129,157 @@ public class DaoImpl implements Dao
             int count = preparedStatement.executeUpdate();
             return (count == 0) ? Optional.empty() : Optional.of(evento);
 
-        }catch (SQLException sqlException){
+        } catch (SQLException sqlException) {
             throw toEventosAppException(sqlException);
         }
     }
-
     @Override
-    public void deleteEvento(String id) throws EventosAppException {
-        final String SQL= """
-                          DELETE
-                          FROM eventos
-                          WHERE id_evento = ?
-                          """;
-        try ( Connection connection = dataSource.getConnection();
-              PreparedStatement preparedStatement = connection.prepareStatement(SQL)
-        )
-        {
+    public void deleteEvento(String id) throws EventosAppException
+    {
+        final String SQL = """
+                DELETE
+                FROM eventos
+                WHERE id_evento = ?
+                """;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL)
+        ) {
             preparedStatement.setString(1, id);
             int count = preparedStatement.executeUpdate();
             if (count == 0) throw new EventoNotFoundException();
 
 
-        } catch (SQLException sqlException)
-        {
+        } catch (SQLException sqlException) {
+            throw toEventosAppException(sqlException);
+        }
+    }
+
+    // recintos
+
+    @Override
+    public List<Recinto> findRecintos() throws EventosAppException {
+        final String SQL = """
+                 SELECT r.id_recinto, r.nombre, r.ubicacion, r.capacidad_total
+                 FROM recintos r
+                """;
+        List<Recinto> recintos = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(SQL)) {
+            while (resultSet.next()) {
+                Recinto recinto = toRecinto(resultSet);
+                recintos.add(recinto);
+            }
+            return recintos;
+
+
+        } catch (SQLException sqlException) {
+            throw toEventosAppException(sqlException);
+        }
+    }
+
+    @Override
+    public Optional<Recinto> findRecintoById(String id) throws EventosAppException {
+        final String SQL = """
+                 SELECT r.id_recinto, r.nombre, r.ubicacion, r.capacidad_total
+                 FROM recintos r
+                 WHERE r.id_recinto = ?;
+                """;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL)
+        ) {
+            preparedStatement.setString(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next() ? Optional.of(toRecinto(resultSet)) : Optional.empty();
+            }
+        } catch (SQLException sqlException) {
+            throw toEventosAppException(sqlException);
+        }
+    }
+
+    @Override
+    public Recinto insertRecinto(Recinto recinto) throws EventosAppException {
+        final String SQL = """
+                             INSERT INTO recintos( id_recinto            , nombre, ubicacion, capacidad_total)
+                                           VALUES(nextval('seq_recintos'), ?     ,      ?   ,      ?         )
+                            """;
+        final String[] fields = {"id_recinto"};
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL, fields)) {
+            preparedStatement.setString(1, recinto.getNombre());
+            preparedStatement.setString(2, recinto.getUbicacion());
+            preparedStatement.setInt(3, recinto.getCapacidad_total());
+            preparedStatement.executeUpdate();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                resultSet.next();
+                String id = resultSet.getString(1);
+                return recinto.withId_recinto(id);
+            }
+        } catch (SQLException sqlException) {
+            throw toEventosAppException(sqlException);
+        }
+    }
+
+    @Override
+    public Optional<Recinto> updateRecinto(Recinto recinto) throws EventosAppException {
+        final String SQL = """
+                             UPDATE recintos
+                             SET id_recinto = ?, nombre = ?, ubicacion = ?,
+                                 capacidad_total = ?
+                            """;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL)) {
+            preparedStatement.setString(1, recinto.getNombre());
+            preparedStatement.setString(2, recinto.getUbicacion());
+            preparedStatement.setInt(3, recinto.getCapacidad_total());
+            preparedStatement.executeUpdate();
+
+            int count = preparedStatement.executeUpdate();
+            return (count == 0) ? Optional.empty() : Optional.of(recinto);
+
+        } catch (SQLException sqlException) {
+            throw toEventosAppException(sqlException);
+        }
+    }
+
+    @Override
+    public void deleteRecinto(String id) throws EventosAppException {
+        final String SQL = """
+                            DELETE
+                            FROM recintos
+                            WHERE id_recinto = ?
+                           """;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL)
+        ) {
+            preparedStatement.setString(1, id);
+            int count = preparedStatement.executeUpdate();
+            if (count == 0) throw new RecintoNotFoundException();
+
+
+        } catch (SQLException sqlException) {
             throw toEventosAppException(sqlException);
         }
     }
 
 
-
-
-    private Evento toEvento(ResultSet resultSet) throws SQLException
-    {
+    private Evento toEvento(ResultSet resultSet) throws SQLException {
         return Evento.builder()
-                     .withId_evento(resultSet.getString("id_evento"))
-                     .withNombre(resultSet.getString("nombre"))
-                     .withDescripcion(resultSet.getString("descripcion"))
-                     .withDisciplina(resultSet.getString("disciplina"))
-                     .withRecinto(resultSet.getString("id_recinto"))
-                     .withFecha_inicio(resultSet.getObject("fecha_inicio", LocalDateTime.class))
-                     .withFecha_final(resultSet.getObject("fecha_fin", LocalDateTime.class))
-                     .withPrecio(resultSet.getDouble("precio"))
-                     .withCapacidad_max(resultSet.getInt("capacidad_max"))
-                     .withEstado(Estado.valueOf(resultSet.getString("estado")))
-                     .build();
+                .withId_evento(resultSet.getString("id_evento"))
+                .withNombre(resultSet.getString("nombre"))
+                .withDescripcion(resultSet.getString("descripcion"))
+                .withDisciplina(resultSet.getString("disciplina"))
+                .withRecinto(resultSet.getString("id_recinto"))
+                .withFecha_inicio(resultSet.getObject("fecha_inicio", LocalDateTime.class))
+                .withFecha_final(resultSet.getObject("fecha_fin", LocalDateTime.class))
+                .withPrecio(resultSet.getDouble("precio"))
+                .withCapacidad_max(resultSet.getInt("capacidad_max"))
+                .withEstado(Estado.valueOf(resultSet.getString("estado")))
+                .build();
     }
-    private Recinto toRecinto(ResultSet resultSet) throws SQLException
-    {
+
+    private Recinto toRecinto(ResultSet resultSet) throws SQLException {
         return Recinto.builder()
                 .withId_recinto(resultSet.getString("id_recinto"))
                 .withNombre(resultSet.getString("nombre"))
@@ -257,25 +288,24 @@ public class DaoImpl implements Dao
                 .build();
     }
 
-    private EventosAppException toEventosAppException(SQLException sqlException)
-    {
+    private EventosAppException toEventosAppException(SQLException sqlException) {
         String message = sqlException.getMessage();
 
-        // recintos
-        if      ( message.contains("NN_RECINTOS_NOMBRE") )      return new FieldRequiredSQLException("nombre");
-        else if ( message.contains("NN_RECINTOS_UBICACION") )   return new FieldRequiredSQLException("ubicacion");
-        else if ( message.contains("NN_RECINTOS_CAPACIDAD") )   return new FieldRequiredSQLException("capacidad_total");
+// recintos
+        if (message.contains("NN_RECINTOS_NOMBRE")) return new FieldRequiredSQLException("nombre");
+        else if (message.contains("NN_RECINTOS_UBICACION")) return new FieldRequiredSQLException("ubicacion");
+        else if (message.contains("NN_RECINTOS_CAPACIDAD")) return new FieldRequiredSQLException("capacidad_total");
 
-            //eventos
-        else if ( message.contains("NN_EVENTOS_NOMBRE") )       return new FieldRequiredSQLException("nombre");
-        else if ( message.contains("NN_EVENTOS_DISCIPLINA") )   return new FieldRequiredSQLException("disciplina");
-        else if ( message.contains("NN_EVENTOS_RECINTO") )      return new FieldRequiredSQLException("id_recinto");
-        else if ( message.contains("NN_EVENTOS_FECHA_INICIO") ) return new FieldRequiredSQLException("fecha_inicio");
-        else if ( message.contains("NN_EVENTOS_FECHA_FIN") )    return new FieldRequiredSQLException("fecha_fin");
-        else if ( message.contains("NN_EVENTOS_CAPACIDAD") )    return new FieldRequiredSQLException("capacidad_max");
+//eventos
+        else if (message.contains("NN_EVENTOS_NOMBRE")) return new FieldRequiredSQLException("nombre");
+        else if (message.contains("NN_EVENTOS_DISCIPLINA")) return new FieldRequiredSQLException("disciplina");
+        else if (message.contains("NN_EVENTOS_RECINTO")) return new FieldRequiredSQLException("id_recinto");
+        else if (message.contains("NN_EVENTOS_FECHA_INICIO")) return new FieldRequiredSQLException("fecha_inicio");
+        else if (message.contains("NN_EVENTOS_FECHA_FIN")) return new FieldRequiredSQLException("fecha_fin");
+        else if (message.contains("NN_EVENTOS_CAPACIDAD")) return new FieldRequiredSQLException("capacidad_max");
 
-        else if ( message.contains("CK_EVENTOS_ESTADO") )       return new InvalidEstadoSQLException();
-        else if ( message.contains("FK_EVENTOS_RECINTO") )      return new RecintoRelacionadoSQLException();
+        else if (message.contains("CK_EVENTOS_ESTADO")) return new InvalidEstadoSQLException();
+        else if (message.contains("FK_EVENTOS_RECINTO")) return new RecintoRelacionadoSQLException();
 
         return new SQLEventosAppException(sqlException);
     }

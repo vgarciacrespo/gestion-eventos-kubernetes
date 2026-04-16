@@ -21,11 +21,11 @@ public class GetEventoWithRecintoByIdUseCaseImpl implements GetEventoWithRecinto
     public EventoWithRecinto execute(String id) throws EventosAppException
     {
         Evento evento = repository.getEventoById(id)
-                .orElseThrow(EventoNotFoundException::new);
+                                 .orElseThrow(EventoNotFoundException::new);
 
         String idRecinto = evento.getRecinto();
         Recinto recinto = repository.getRecintoById(idRecinto)
-                .orElseThrow(RecintoNotFoundException::new);
+                                    .orElseThrow(RecintoNotFoundException::new);
 
         return EventoWithRecinto.builder()
                                 .withEvento(evento)
