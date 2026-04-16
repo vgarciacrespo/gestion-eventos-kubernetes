@@ -1,9 +1,7 @@
-package es.upsa.tfg.gestioneventos.wscatalogo.application.usecases;
+package es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.eventos;
 
 import es.upsa.tfg.gestioneventos.domain.entities.EventoWithRecinto;
 import es.upsa.tfg.gestioneventos.domain.exceptions.EventosAppException;
-
-import java.util.Optional;
 
 public interface GetEventoWithRecintoByIdUseCase
 {

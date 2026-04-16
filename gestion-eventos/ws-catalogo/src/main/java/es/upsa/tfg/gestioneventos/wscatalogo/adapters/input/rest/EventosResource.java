@@ -1,13 +1,12 @@
 package es.upsa.tfg.gestioneventos.wscatalogo.adapters.input.rest;
 
 import es.upsa.tfg.gestioneventos.domain.dtos.EventoDto;
-import es.upsa.tfg.gestioneventos.domain.dtos.RecintoDto;
 import es.upsa.tfg.gestioneventos.domain.entities.Evento;
 import es.upsa.tfg.gestioneventos.domain.entities.EventoWithRecinto;
-import es.upsa.tfg.gestioneventos.domain.entities.Recinto;
 import es.upsa.tfg.gestioneventos.domain.exceptions.EventosAppException;
 import es.upsa.tfg.gestioneventos.domain.mappers.Mappers;
-import es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.*;
+import es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.eventos.*;
+import es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.recintos.GetRecintosUseCase;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -33,8 +32,7 @@ public class EventosResource
     UpdateEventoUseCase updateEventoUseCase;
     @Inject
     RemoveEventoUseCase removeEventoUseCase;
-    @Inject
-    AddRecintoUseCase addRecintoUseCase;
+
     @Inject
     UriInfo uriInfo;
 
@@ -45,14 +43,7 @@ public class EventosResource
                        .entity(getEquiposUseCase.execute())
                        .build();
     }
-    @Path("/recintos")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getRecintos() throws EventosAppException {
-        return Response.ok()
-                       .entity(getRecintosUseCase.execute())
-                       .build();
-    }
+
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -76,18 +67,7 @@ public class EventosResource
                        .build();
     }
 
-    @Path("/recintos")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addRecinto(RecintoDto recintoDto) throws EventosAppException
-    {
-        Recinto recinto = Mappers.toRecinto(recintoDto);
-        Recinto insertedRecinto = addRecintoUseCase.execute(recinto);
-        return Response.created(createRecintoURI(insertedRecinto))
-                       .entity(insertedRecinto)
-                       .build();
-    }
+
     @Path("/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -116,13 +96,6 @@ public class EventosResource
                 .path(evento.getId_evento())
                 .build();
 
-    }
-    private URI createRecintoURI(Recinto recinto)
-    {
-        return uriInfo.getBaseUriBuilder()
-                .path("/recintos")
-                .path(recinto.getId_recinto())
-                .build();
     }
 
 
