@@ -12,6 +12,7 @@
         <module>domain</module>
         <module>shared-quarkus</module>
         <module>ws-catalogo</module>
+        <module>ws-reservas</module>
     </modules>
 
     <properties>

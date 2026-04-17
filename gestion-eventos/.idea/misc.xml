@@ -4,6 +4,7 @@
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="Quarkus" url="file://$PROJECT_DIR$/shared-quarkus" />
     <file type="Quarkus" url="file://$PROJECT_DIR$/ws-catalogo" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/ws-reservas" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
@@ -11,6 +12,7 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/ws-catalogo/pom.xml" />
         <option value="$PROJECT_DIR$/shared-quarkus/pom.xml" />
+        <option value="$PROJECT_DIR$/ws-reservas/pom.xml" />
       </list>
     </option>
   </component>

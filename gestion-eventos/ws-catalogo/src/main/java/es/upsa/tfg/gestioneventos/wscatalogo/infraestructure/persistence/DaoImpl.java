@@ -32,7 +32,7 @@ public class DaoImpl implements Dao {
     {
 
         final String SQL = """
-                 SELECT e.id_evento, e.nombre, e.descripcion, e.disciplina, e.id_recinto, e.fecha_inicio, e.fecha_fin, e.precio, e.capacidad_max, e.estado
+                 SELECT e.id_evento, e.nombre, e.descripcion, e.disciplina, e.id_recinto, e.fecha_inicio, e.fecha_fin, e.precio, e.entradas_disponibles, e.estado
                  FROM eventos e
                 """;
         List<Evento> eventos = new ArrayList<>();
@@ -55,7 +55,7 @@ public class DaoImpl implements Dao {
     public Optional<Evento> findEventoById(String id) throws EventosAppException
     {
         final String SQL = """
-                 SELECT e.id_evento, e.nombre, e.descripcion, e.disciplina, e.id_recinto, e.fecha_inicio, e.fecha_fin, e.precio, e.capacidad_max, e.estado
+                 SELECT e.id_evento, e.nombre, e.descripcion, e.disciplina, e.id_recinto, e.fecha_inicio, e.fecha_fin, e.precio, e.entradas_disponibles, e.estado
                  FROM eventos e
                  WHERE e.id_evento = ?;
                 """;
@@ -76,7 +76,7 @@ public class DaoImpl implements Dao {
     public Evento insertEvento(Evento evento) throws EventosAppException
     {
         final String SQL = """
-                 INSERT INTO eventos( id_evento            , nombre, descripcion, disciplina, id_recinto, fecha_inicio, fecha_fin, precio, capacidad_max, estado)
+                 INSERT INTO eventos( id_evento            , nombre, descripcion, disciplina, id_recinto, fecha_inicio, fecha_fin, precio, entradas_disponibles, estado)
                               VALUES(nextval('seq_eventos'), ?     ,      ?     ,      ?    ,     ?     ,     ?       ,     ?    ,    ?  ,       ?      ,    ?  )
                 """;
         final String[] fields = {"id_evento"};
@@ -89,7 +89,7 @@ public class DaoImpl implements Dao {
             preparedStatement.setTimestamp(5, Timestamp.valueOf(evento.getFecha_inicio()));
             preparedStatement.setTimestamp(6, Timestamp.valueOf(evento.getFecha_final()));
             preparedStatement.setDouble(7, evento.getPrecio());
-            preparedStatement.setInt(8, evento.getCapacidad_max());
+            preparedStatement.setInt(8, evento.getEntradas_disponibles());
             preparedStatement.setString(9, String.valueOf(evento.getEstado()));
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
@@ -109,7 +109,7 @@ public class DaoImpl implements Dao {
                  UPDATE eventos
                  SET nombre = ?, descripcion = ?, disciplina = ?,
                      id_recinto = ?, fecha_inicio = ?, fecha_fin = ?,
-                     precio = ?, capacidad_max = ?, estado = ?
+                     precio = ?, entradas_disponibles = ?, estado = ?
                  WHERE id_evento = ?
                 """;
 
@@ -122,7 +122,7 @@ public class DaoImpl implements Dao {
             preparedStatement.setTimestamp(5, Timestamp.valueOf(evento.getFecha_inicio()));
             preparedStatement.setTimestamp(6, Timestamp.valueOf(evento.getFecha_final()));
             preparedStatement.setDouble(7, evento.getPrecio());
-            preparedStatement.setInt(8, evento.getCapacidad_max());
+            preparedStatement.setInt(8, evento.getEntradas_disponibles());
             preparedStatement.setString(9, String.valueOf(evento.getEstado()));
             preparedStatement.setString(10, evento.getId_evento());
 
@@ -274,7 +274,7 @@ public class DaoImpl implements Dao {
                 .withFecha_inicio(resultSet.getObject("fecha_inicio", LocalDateTime.class))
                 .withFecha_final(resultSet.getObject("fecha_fin", LocalDateTime.class))
                 .withPrecio(resultSet.getDouble("precio"))
-                .withCapacidad_max(resultSet.getInt("capacidad_max"))
+                .withEntradas_disponibles(resultSet.getInt("entradas_disponibles"))
                 .withEstado(Estado.valueOf(resultSet.getString("estado")))
                 .build();
     }
@@ -302,7 +302,7 @@ public class DaoImpl implements Dao {
         else if (message.contains("NN_EVENTOS_RECINTO")) return new FieldRequiredSQLException("id_recinto");
         else if (message.contains("NN_EVENTOS_FECHA_INICIO")) return new FieldRequiredSQLException("fecha_inicio");
         else if (message.contains("NN_EVENTOS_FECHA_FIN")) return new FieldRequiredSQLException("fecha_fin");
-        else if (message.contains("NN_EVENTOS_CAPACIDAD")) return new FieldRequiredSQLException("capacidad_max");
+        else if (message.contains("NN_EVENTOS_ENTRADAS_DISPONIBLES")) return new FieldRequiredSQLException("entradas_disponibles");
 
         else if (message.contains("CK_EVENTOS_ESTADO")) return new InvalidEstadoSQLException();
         else if (message.contains("FK_EVENTOS_RECINTO")) return new RecintoRelacionadoSQLException();

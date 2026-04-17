@@ -23,8 +23,6 @@ public class EventosResource
     @Inject
     GetEventosUseCase getEquiposUseCase;
     @Inject
-    GetRecintosUseCase getRecintosUseCase;
-    @Inject
     GetEventoWithRecintoByIdUseCase getEventoWithRecintoByIdUseCase;
     @Inject
     AddEventoUseCase addEventoUseCase;

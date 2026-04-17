@@ -19,7 +19,7 @@ public class Evento
     private LocalDateTime fecha_inicio;
     private LocalDateTime fecha_final;
     private double precio;
-    private int capacidad_max;
+    private int entradas_disponibles;
     private Estado estado;
 
 
