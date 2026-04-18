@@ -1,5 +1,6 @@
 package es.upsa.tfg.gestioneventos.wscatalogo.adapters.input.rest;
 
+import es.upsa.tfg.gestioneventos.domain.dtos.DescontarEntradasDto;
 import es.upsa.tfg.gestioneventos.domain.dtos.EventoDto;
 import es.upsa.tfg.gestioneventos.domain.entities.Evento;
 import es.upsa.tfg.gestioneventos.domain.entities.EventoWithRecinto;
@@ -7,6 +8,7 @@ import es.upsa.tfg.gestioneventos.domain.exceptions.EventosAppException;
 import es.upsa.tfg.gestioneventos.domain.mappers.Mappers;
 import es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.eventos.*;
 import es.upsa.tfg.gestioneventos.wscatalogo.application.usecases.recintos.GetRecintosUseCase;
+import es.upsa.tfg.gestioneventos.wscatalogo.domain.exceptions.StockInsuficienteException;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -30,6 +32,8 @@ public class EventosResource
     UpdateEventoUseCase updateEventoUseCase;
     @Inject
     RemoveEventoUseCase removeEventoUseCase;
+    @Inject
+    DescontarEntradasUseCase descontarEntradasUseCase;
 
     @Inject
     UriInfo uriInfo;
@@ -77,6 +81,22 @@ public class EventosResource
         return Response.ok()
                        .entity( updatedEvento )
                        .build();
+    }
+    @Path("/{id}/descontar")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response descontarEntradas(@PathParam("id") String id,  DescontarEntradasDto dto) throws EventosAppException
+    {
+        boolean exito = descontarEntradasUseCase.execute(id, dto.getCantidad());
+
+        if (!exito) {
+            throw new StockInsuficienteException();
+        }
+
+        return Response.ok()
+                .entity("{\"mensaje\": \"Stock actualizado correctamente\"}")
+                .build();
     }
     @Path("/{id}")
     @DELETE

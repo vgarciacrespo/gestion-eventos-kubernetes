@@ -37,6 +37,11 @@ public class RepositoryImpl implements Repository
         dao.deleteEvento(id);
     }
 
+    @Override
+    public boolean descontarEntradas(String id, int cantidad) throws EventosAppException {
+        return dao.descontarEntradas(id, cantidad);
+    }
+
     //recintos
     @Override
     public List<Recinto> getRecintos() throws EventosAppException {

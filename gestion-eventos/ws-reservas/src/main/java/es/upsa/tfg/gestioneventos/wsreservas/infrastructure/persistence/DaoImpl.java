@@ -108,8 +108,8 @@ public class DaoImpl implements Dao
                              WHERE id_reserva = ?
                            """;
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL)) {
-
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL))
+        {
             preparedStatement.setString(1, nuevoEstado);
             preparedStatement.setString(2, idReserva);
 
@@ -121,25 +121,8 @@ public class DaoImpl implements Dao
         }
     }
 
-    @Override
-    public void deleteReserva(String id) throws EventosAppException
-    {
-        final String SQL = """
-                             DELETE
-                             FROM reservas
-                             WHERE id_reserva = ?
-                           """;
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL)
-        ) {
-            preparedStatement.setString(1, id);
-            int count = preparedStatement.executeUpdate();
-            if (count == 0) throw new ReservaNotFoundException();
 
-        } catch (SQLException sqlException) {
-            throw toReservasAppException(sqlException);
-        }
-    }
+
 
     private Reserva toReserva(ResultSet resultSet) throws SQLException {
         return Reserva.builder()

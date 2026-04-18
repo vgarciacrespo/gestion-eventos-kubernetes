@@ -14,7 +14,7 @@ public interface Dao
     Evento insertEvento(Evento evento) throws EventosAppException;
     Optional<Evento> updateEvento(Evento evento) throws EventosAppException;
     void deleteEvento(String id) throws EventosAppException;
-
+    boolean descontarEntradas(String id, int cantidad) throws EventosAppException;
 
     List<Recinto> findRecintos() throws EventosAppException;
     Optional<Recinto> findRecintoById(String id) throws EventosAppException;

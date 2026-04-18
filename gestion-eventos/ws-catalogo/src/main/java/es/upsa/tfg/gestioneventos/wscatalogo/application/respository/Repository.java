@@ -13,7 +13,7 @@ public interface Repository
     Optional<Evento> getEventoById(String id) throws EventosAppException;
     Evento save(Evento evento) throws EventosAppException;
     void removeEventoById(String id) throws EventosAppException;
-
+    boolean descontarEntradas(String id, int cantidad) throws EventosAppException;
 
     List<Recinto> getRecintos() throws EventosAppException;
     Optional<Recinto> getRecintoById(String id) throws EventosAppException;

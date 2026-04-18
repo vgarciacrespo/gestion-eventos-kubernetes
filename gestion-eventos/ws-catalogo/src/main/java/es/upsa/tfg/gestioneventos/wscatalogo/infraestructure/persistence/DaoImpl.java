@@ -154,6 +154,35 @@ public class DaoImpl implements Dao {
         }
     }
 
+    @Override
+    public boolean descontarEntradas(String id, int cantidad) throws EventosAppException
+    {
+        final String SQL = """
+                             UPDATE eventos
+                             SET entradas_disponibles = entradas_disponibles - ?,
+                                 estado = CASE 
+                                             WHEN (entradas_disponibles - ?) = 0 THEN 'LLENO' 
+                                             ELSE estado 
+                                          END
+                             WHERE id_evento = ? AND entradas_disponibles >= ? AND estado = 'ABIERTO'
+                            """;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL)) {
+
+            preparedStatement.setInt(1, cantidad);
+            preparedStatement.setInt(2, cantidad);
+            preparedStatement.setString(3, id);
+            preparedStatement.setInt(4, cantidad);
+
+            int count = preparedStatement.executeUpdate();
+            return count > 0;
+
+        } catch (SQLException sqlException) {
+            throw toEventosAppException(sqlException);
+        }
+    }
+
     // recintos
 
     @Override

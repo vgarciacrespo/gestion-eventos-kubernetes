@@ -6,7 +6,15 @@
         <entry key="ws-catalogo">
           <value>
             <ModuleState>
-              <option name="hash" value="795991222" />
+              <option name="hash" value="-28311780" />
+              <option name="version" value="1" />
+            </ModuleState>
+          </value>
+        </entry>
+        <entry key="ws-reservas">
+          <value>
+            <ModuleState>
+              <option name="hash" value="-58066548" />
               <option name="version" value="1" />
             </ModuleState>
           </value>
