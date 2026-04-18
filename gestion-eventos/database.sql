@@ -1,11 +1,14 @@
 DROP SEQUENCE IF EXISTS seq_recintos;
 DROP SEQUENCE IF EXISTS seq_eventos;
+DROP SEQUENCE IF EXISTS seq_reservas;
+
 
 DROP TABLE IF EXISTS recintos CASCADE;
 DROP TABLE IF EXISTS eventos CASCADE;
 
 CREATE SEQUENCE seq_recintos MINVALUE 1 MAXVALUE 999999999 START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_eventos MINVALUE 1 MAXVALUE 999999999 START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_reservas MINVALUE 1 MAXVALUE 999999999 START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE recintos
 (
@@ -67,7 +70,7 @@ CREATE TABLE reservas
 (
     id_reserva        VARCHAR(9),
     id_evento         VARCHAR(9),
-    nombre_cliente        VARCHAR(9),
+    nombre_cliente        VARCHAR(100),
     fecha_reserva     TIMESTAMP,
     cantidad_entradas INT,
     precio_total      NUMERIC(10, 2),
@@ -82,3 +85,11 @@ CREATE TABLE reservas
     CONSTRAINT "NN_RESERVAS_PRECIO" CHECK (precio_total IS NOT NULL),
     CONSTRAINT "CK_RESERVAS_ESTADO" CHECK (estado IN ('PENDIENTE', 'CONFIRMADA', 'CANCELADA'))
 );
+
+INSERT INTO reservas (id_reserva, id_evento, nombre_cliente, fecha_reserva, cantidad_entradas, precio_total, estado)
+VALUES
+(nextval('seq_reservas'), '1', 'Carlos Martínez Ruiz', '2026-04-15 10:30:00', 2, 30.00, 'CONFIRMADA'),
+(nextval('seq_reservas'), '2', 'Ana María Gómez Fernández', '2026-04-16 12:15:00', 5, 0.00, 'CONFIRMADA'),
+(nextval('seq_reservas'), '4', 'Luis Miguel Rey González', '2026-04-17 09:45:00', 3, 15.00, 'PENDIENTE'),
+(nextval('seq_reservas'), '5', 'Eva de la Fuente Domínguez', '2026-04-17 18:00:00', 2, 20.00, 'CANCELADA'),
+(nextval('seq_reservas'), '1', 'Juan Pablo Silva', '2026-04-18 11:20:00', 1, 15.00, 'CONFIRMADA');
