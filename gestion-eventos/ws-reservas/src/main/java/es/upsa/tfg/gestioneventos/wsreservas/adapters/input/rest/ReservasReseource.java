@@ -1,19 +1,23 @@
 package es.upsa.tfg.gestioneventos.wsreservas.adapters.input.rest;
 
+import es.upsa.tfg.gestioneventos.domain.dtos.EventoDto;
+import es.upsa.tfg.gestioneventos.domain.dtos.ReservaDto;
+import es.upsa.tfg.gestioneventos.domain.entities.Evento;
 import es.upsa.tfg.gestioneventos.domain.entities.Reserva;
 import es.upsa.tfg.gestioneventos.domain.entities.ReservaWithEvento;
 import es.upsa.tfg.gestioneventos.domain.exceptions.EventosAppException;
+import es.upsa.tfg.gestioneventos.domain.mappers.Mappers;
+import es.upsa.tfg.gestioneventos.wsreservas.application.usecases.AddReservaUseCase;
 import es.upsa.tfg.gestioneventos.wsreservas.application.usecases.GetReservaByIdUseCase;
 import es.upsa.tfg.gestioneventos.wsreservas.application.usecases.GetReservasUseCase;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -25,6 +29,10 @@ public class ReservasReseource
     GetReservasUseCase getReservasUseCase;
     @Inject
     GetReservaByIdUseCase getReservaByIdUseCase;
+    @Inject
+    AddReservaUseCase addReservaUseCase;
+    @Inject
+    UriInfo uriInfo;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,6 +55,29 @@ public class ReservasReseource
                 .entity(reservaWithEvento)
                 .build();
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addReserva(ReservaDto reservaDto) throws EventosAppException
+    {
+        Reserva reserva = Mappers.toReserva(reservaDto );
+        Reserva insertedReserva = addReservaUseCase.execute(reserva);
+        return Response.created(createEventoURI(insertedReserva))
+                .entity(insertedReserva)
+                .build();
+    }
+
+    private URI createEventoURI(Reserva reserva)
+    {
+        return uriInfo.getBaseUriBuilder()
+                .path("/reservas")
+                .path(reserva.getId_reserva())
+                .build();
+
+    }
+
+
 
 
 

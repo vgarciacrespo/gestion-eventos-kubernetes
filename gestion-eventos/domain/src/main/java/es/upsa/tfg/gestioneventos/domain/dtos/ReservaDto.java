@@ -14,7 +14,5 @@ public class ReservaDto
 {
     private String id_evento;
     private String nombre_cliente;
-    private LocalDateTime fecha_reserva;
     private int cantidad_entradas;
-    private double precio_total;
 }

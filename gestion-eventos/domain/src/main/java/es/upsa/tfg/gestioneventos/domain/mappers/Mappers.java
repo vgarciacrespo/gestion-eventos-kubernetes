@@ -58,16 +58,14 @@ public class Mappers
                 .withCapacidad_total(recinto.getCapacidad_total())
                 .build();
     }
-    public static Reserva toReserva(ReservaDto reservaDto, double precioEvento)
+    public static Reserva toReserva(ReservaDto reservaDto)
     {
         return Reserva.builder()
                 .withId_reserva(null)
                 .withId_evento(reservaDto.getId_evento())
                 .withNombre_cliente(reservaDto.getNombre_cliente())
-                .withFecha_reserva(LocalDateTime.now())
                 .withCantidad_entradas(reservaDto.getCantidad_entradas())
-                .withPrecio_total(reservaDto.getCantidad_entradas()*precioEvento)
-                .withEstadoReserva(EstadoReserva.PENDIENTE)
+                .withFecha_reserva(LocalDateTime.now())
                 .build();
     }
     public static ReservaDto toReservaDto(Reserva reserva)
@@ -75,9 +73,7 @@ public class Mappers
         return ReservaDto.builder()
                 .withId_evento(reserva.getId_evento())
                 .withNombre_cliente(reserva.getNombre_cliente())
-                .withFecha_reserva(reserva.getFecha_reserva())
                 .withCantidad_entradas(reserva.getCantidad_entradas())
-                .withPrecio_total(reserva.getPrecio_total())
                 .build();
     }
 
