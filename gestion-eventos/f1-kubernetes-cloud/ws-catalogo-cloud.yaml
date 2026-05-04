@@ -1,3 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: eventos-db-secret
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "managerDB.1"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,9 +22,8 @@ spec:
     spec:
       serviceAccountName: ksa-backend
       containers:
-
         - name: ws-catalogo
-          image: europe-southwest1-docker.pkg.dev/gestionreservaseventos/repo-eventos/ws-catalogo:v2
+          image: europe-southwest1-docker.pkg.dev/gestionreservaseventos/repo-eventos/ws-catalogo:v5
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -42,7 +49,10 @@ spec:
             - name: DATABASE_USERNAME
               value: "postgres"
             - name: DATABASE_PASSWORD
-              value: "managerDB.1"
+              valueFrom:
+                secretKeyRef:
+                  name: eventos-db-secret
+                  key: POSTGRES_PASSWORD
 
         - name: cloud-sql-proxy
           image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.1
