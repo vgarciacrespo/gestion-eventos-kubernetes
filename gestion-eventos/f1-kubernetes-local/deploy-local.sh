@@ -14,3 +14,4 @@ kubectl rollout status statefulset/eventos-db
 kubectl apply -f f1-kubernetes-local/ws-catalogo.yaml
 
 kubectl get pods -w
+
