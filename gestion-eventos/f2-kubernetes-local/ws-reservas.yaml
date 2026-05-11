@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ws-reservas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ws-reservas
+  template:
+    metadata:
+      labels:
+        app: ws-reservas
+    spec:
+      containers:
+        - name: ws-reservas
+          image: gestion-eventos-ws-reservas:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /reservas/health/live
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /reservas/health/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          env:
+            - name: DATABASE_HOST
+              value: "reservas-db-service"
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              value: "upsa"
+            - name: DATABASE_USERNAME
+              value: "system"
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: reservas-db-secret
+                  key: POSTGRES_PASSWORD
+            - name: SERVICE_EVENTOS_URL
+              value: "http://ws-catalogo-service:8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ws-reservas-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: ws-reservas
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8080
