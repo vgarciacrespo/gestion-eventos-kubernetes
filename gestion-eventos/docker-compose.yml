@@ -29,7 +29,7 @@ services:
       DATABASE_USERNAME: system
       DATABASE_PASSWORD: manager
     ports:
-      - "8080:8080"
+      - "8082:8080"
     depends_on:
       database:
         condition: service_healthy
@@ -39,3 +39,30 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
+
+  ws-reservas:
+    build:
+      context: ./ws-reservas
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: ws-reservas
+    environment:
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: upsa
+      DATABASE_USERNAME: system
+      DATABASE_PASSWORD: manager
+      SERVICE_EVENTOS_URL: "http://ws-catalogo:8080"
+    ports:
+      - "8083:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+      ws-catalogo:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/reservas/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
