@@ -23,7 +23,7 @@ spec:
       serviceAccountName: ksa-backend
       containers:
         - name: ws-catalogo
-          image: europe-southwest1-docker.pkg.dev/gestionreservaseventos/repo-eventos/ws-catalogo:v5
+          image: europe-southwest1-docker.pkg.dev/gestionreservaseventos/repo-eventos/ws-catalogo:v1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

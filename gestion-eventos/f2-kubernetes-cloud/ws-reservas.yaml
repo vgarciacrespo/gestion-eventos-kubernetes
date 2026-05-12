@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: eventos-db-secret
+  name: reservas-db-secret
 type: Opaque
 stringData:
   POSTGRES_PASSWORD: "managerDB.1"
@@ -9,33 +9,33 @@ stringData:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ws-catalogo
+  name: ws-reservas
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ws-catalogo
+      app: ws-reservas
   template:
     metadata:
       labels:
-        app: ws-catalogo
+        app: ws-reservas
     spec:
       serviceAccountName: ksa-backend
       containers:
-        - name: ws-catalogo
-          image: europe-southwest1-docker.pkg.dev/gestionreservaseventos/repo-eventos/ws-catalogo:v5
+        - name: ws-reservas
+          image: europe-southwest1-docker.pkg.dev/gestionreservaseventos/repo-eventos/ws-reservas:v1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           livenessProbe:
             httpGet:
-              path: /eventos/health/live
+              path: /reservas/health/live
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /eventos/health/ready
+              path: /reservas/health/ready
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -45,15 +45,16 @@ spec:
             - name: DATABASE_PORT
               value: "5432"
             - name: DATABASE_NAME
-              value: "eventos-db"
+              value: "reservas-db"
             - name: DATABASE_USERNAME
               value: "postgres"
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: eventos-db-secret
+                  name: reservas-db-secret
                   key: POSTGRES_PASSWORD
-
+            - name: SERVICE_EVENTOS_URL
+              value: "http://ws-catalogo-service:8080"
         - name: cloud-sql-proxy
           image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.1
           args:
@@ -65,11 +66,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ws-catalogo-service
+  name: ws-reservas-service
 spec:
   type: LoadBalancer
   selector:
-    app: ws-catalogo
+    app: ws-reservas
   ports:
     - protocol: TCP
       port: 8080

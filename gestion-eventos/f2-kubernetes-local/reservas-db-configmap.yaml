@@ -4,7 +4,9 @@ metadata:
   name: reservas-db-init
 data:
   init.sql: |
-    
+    DROP SEQUENCE IF EXISTS seq_reservas;
+    DROP TABLE IF EXISTS reservas CASCADE;
+    CREATE SEQUENCE seq_reservas MINVALUE 1 MAXVALUE 999999999 START WITH 1 INCREMENT BY 1;
     CREATE TABLE reservas
     (
         id_reserva        VARCHAR(9),
