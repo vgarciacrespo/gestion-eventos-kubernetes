@@ -67,7 +67,8 @@ kind: Service
 metadata:
   name: ws-catalogo-service
 spec:
-  type: LoadBalancer
+  #type: LoadBalancer
+  type: ClusterIP
   selector:
     app: ws-catalogo
   ports:

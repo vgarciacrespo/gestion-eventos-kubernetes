@@ -1,4 +1,4 @@
-gcloud container clusters resize cluster-gestion-eventos --num-nodes=1 --zone europe-southwest1-a
+#gcloud container clusters resize cluster-gestion-eventos --num-nodes=1 --zone europe-southwest1-a
 
 mvn clean package
 
@@ -15,5 +15,14 @@ gcloud container clusters get-credentials cluster-gestion-eventos --region europ
 
 kubectl apply -f f2-kubernetes-cloud/ws-catalogo.yaml
 kubectl apply -f f2-kubernetes-cloud/ws-reservas.yaml
+kubectl apply -f ingress.yaml
 
-kubectl get pods -w
+
+#kubectl get pods -w
+
+
+#obtener IPs publicas
+#kubectl get svc
+
+#kubectl get svc ws-catalogo-service
+#kubectl get ingress api-gateway-ingress -w

@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-gateway-ingress
+  annotations:
+    # Instruye a GKE para aprovisionar un balanceador HTTP de Google Cloud
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    - http:
+        paths:
+          # Enrutamiento al microservicio de Catálogo
+          - path: /eventos
+            pathType: Prefix
+            backend:
+              service:
+                name: ws-catalogo-service
+                port:
+                  number: 8080
+          # Enrutamiento al microservicio de Reservas
+          - path: /reservas
+            pathType: Prefix
+            backend:
+              service:
+                name: ws-reservas-service
+                port:
+                  number: 8080

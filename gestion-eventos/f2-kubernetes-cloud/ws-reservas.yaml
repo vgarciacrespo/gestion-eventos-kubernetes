@@ -68,7 +68,8 @@ kind: Service
 metadata:
   name: ws-reservas-service
 spec:
-  type: LoadBalancer
+  #type: LoadBalancer
+  type: NodePort
   selector:
     app: ws-reservas
   ports:
