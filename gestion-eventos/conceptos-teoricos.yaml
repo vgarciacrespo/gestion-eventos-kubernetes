@@ -1,0 +1,100 @@
+#creacion pod
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#  name: web-pod
+#  labels:
+#    app: web
+#spec:
+#  containers:
+#    - name: web-container
+#      image: nginx:latest
+#      ports:
+#        - containerPort: 80
+#
+
+#deployment
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: web-deployment
+#spec:
+#  replicas: 3
+#  selector:
+#    matchLabels:
+#      app: web
+#  template:
+#    metadata:
+#      labels:
+#        app: web
+#    spec:
+#      containers:
+#        - name: web-container
+#          image: nginx:latest
+
+#service
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: web-service
+#spec:
+#  type: ClusterIP
+#  selector:
+#    app: web
+#  ports:
+#    - protocol: TCP
+#      port: 80
+#      targetPort: 80
+
+
+#ingress
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: web-ingress
+#spec:
+#  rules:
+#    - host: midominio.com
+#      http:
+#        paths:
+#          - path: /api
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: web-service
+#                port:
+#                  number: 80
+#pvc
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: database-pvc
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 10Gi
+#  storageClassName: standard
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-pod
+spec:
+  containers:
+    - name: app-container
+      image: mi-aplicacion:v1
+      env:
+        # Inyección de configuración no confidencial
+        - name: API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: api_url
+        # Inyección segura de credenciales
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: eventos-db-secret
+              key: POSTGRES_PASSWORD

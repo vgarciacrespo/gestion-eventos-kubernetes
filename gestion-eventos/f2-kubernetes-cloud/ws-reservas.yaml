@@ -67,9 +67,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ws-reservas-service
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
 spec:
   #type: LoadBalancer
-  type: NodePort
+  type: ClusterIP
   selector:
     app: ws-reservas
   ports:

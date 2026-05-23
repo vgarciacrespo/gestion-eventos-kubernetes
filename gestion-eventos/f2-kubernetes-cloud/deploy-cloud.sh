@@ -15,7 +15,9 @@ gcloud container clusters get-credentials cluster-gestion-eventos --region europ
 
 kubectl apply -f f2-kubernetes-cloud/ws-catalogo.yaml
 kubectl apply -f f2-kubernetes-cloud/ws-reservas.yaml
-kubectl apply -f ingress.yaml
+kubectl apply -f f2-kubernetes-cloud/ingress.yaml
+kubectl apply -f f2-kubernetes-cloud/ws-catalogo-hpa.yaml
+
 
 
 #kubectl get pods -w
@@ -26,3 +28,11 @@ kubectl apply -f ingress.yaml
 
 #kubectl get svc ws-catalogo-service
 #kubectl get ingress api-gateway-ingress -w
+
+#monitorear estado HPA
+#kubectl get hpa -w
+
+#kubectl scale deployment ws-catalogo --replicas=1
+
+#atacar ws-catalogo
+#ab -n 100000 -c 15 http://8.232.193.87/eventos/

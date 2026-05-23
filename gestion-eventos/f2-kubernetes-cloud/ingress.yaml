@@ -3,7 +3,6 @@ kind: Ingress
 metadata:
   name: api-gateway-ingress
   annotations:
-    # Instruye a GKE para aprovisionar un balanceador HTTP de Google Cloud
     kubernetes.io/ingress.class: "gce"
 spec:
   rules:
